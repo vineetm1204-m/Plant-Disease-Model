@@ -54,8 +54,7 @@ The CNN model is served via a **Flask backend**, and the frontend uses the brows
 ## 📦 Dataset
 
 > ### ⬇️ Dataset Link
-> **[Click here to access the dataset](#)**
-> <!-- 🔁 REPLACE THE '#' ABOVE WITH YOUR ACTUAL DATASET LINK (Kaggle / Google Drive / Hugging Face / etc.) -->
+> **[Click here to access the dataset](https://www.kaggle.com/datasets/vineetm1204/dataset)**
 
 The dataset contains labeled images of healthy and diseased plant leaves across multiple species, organized by class and split into training and validation sets.
 
