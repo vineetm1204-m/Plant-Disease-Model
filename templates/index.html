@@ -12,53 +12,197 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
+:root {
+    --bg-start: #eef8f0;
+    --bg-end: #dceef4;
+    --surface: rgba(255, 255, 255, 0.9);
+    --text: #183028;
+    --primary: #1f7a53;
+    --primary-dark: #176345;
+    --danger: #c0392b;
+    --danger-dark: #9f2f24;
+}
+
 body {
     margin: 0;
     font-family: 'Inter', sans-serif;
-    background: #f5f5f7;
+    background: linear-gradient(140deg, var(--bg-start), var(--bg-end));
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    color: var(--text);
+    overflow: hidden;
 }
 
 .container {
-    background: white;
+    background: var(--surface);
+    backdrop-filter: blur(8px);
     padding: 25px;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    width: 320px;
+    box-shadow: 0 14px 40px rgba(17, 42, 33, 0.14);
+    width: min(360px, 92vw);
     text-align: center;
+    transform: translateY(16px);
+    animation: slideIn 700ms ease forwards;
 }
 
 h1 {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.camera-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border: 2px dashed rgba(31, 122, 83, 0.45);
+    border-radius: 14px;
+    background: linear-gradient(160deg, #edf6f1 0%, #dbece3 100%);
+    overflow: hidden;
+}
+
+.camera-frame::before {
+    content: "Camera preview";
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: rgba(24, 48, 40, 0.62);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: opacity 220ms ease;
+}
+
+.camera-frame.active::before {
+    opacity: 0;
 }
 
 video {
     width: 100%;
+    height: 100%;
     border-radius: 12px;
+    object-fit: cover;
+    background: #12261d;
+    opacity: 0;
+    transform: scale(0.98);
+    transition: opacity 300ms ease, transform 300ms ease;
 }
 
 button {
-    margin-top: 15px;
+    margin-top: 12px;
     width: 100%;
     padding: 12px;
     border-radius: 12px;
     border: none;
-    background: black;
+    background: var(--primary);
     color: white;
     cursor: pointer;
+    font-weight: 600;
+    transition: transform 140ms ease, box-shadow 200ms ease, background 200ms ease;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(16, 80, 54, 0.2);
+    background: var(--primary-dark);
+}
+
+button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.camera-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.camera-actions button {
+    margin-top: 0;
+}
+
+#stopCameraBtn {
+    background: var(--danger);
+}
+
+#stopCameraBtn:hover {
+    background: var(--danger-dark);
+    box-shadow: 0 10px 20px rgba(137, 39, 30, 0.18);
+}
+
+.status {
+    margin-top: 12px;
+    font-size: 14px;
+    min-height: 20px;
+    transition: color 200ms ease;
 }
 
 .result {
     margin-top: 15px;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 18px;
+    min-height: 24px;
 }
 
 .loader {
     display: none;
+    margin-top: 14px;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.loader.show {
+    display: block;
+    animation: pulse 900ms ease-in-out infinite;
+}
+
+.result.show,
+#confidence.show {
+    animation: fadeUp 420ms ease;
+}
+
+.video-on {
+    opacity: 1;
+    transform: scale(1);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 </style>
 </head>
@@ -68,9 +212,18 @@ button {
 <div class="container">
     <h1>🌱 Leaf Health Scanner</h1>
 
-    <video id="video" autoplay playsinline></video>
+    <div class="camera-frame" id="cameraFrame">
+        <video id="video" autoplay playsinline></video>
+    </div>
 
-    <button onclick="capture()">Scan Leaf</button>
+    <div class="camera-actions">
+        <button id="startCameraBtn" type="button" onclick="startCamera()">Camera On</button>
+        <button id="stopCameraBtn" type="button" onclick="stopCamera()" disabled>Camera Off</button>
+    </div>
+
+    <div class="status" id="cameraStatus">Camera is off</div>
+
+    <button id="scanBtn" type="button" onclick="capture()" disabled>Scan Leaf</button>
 
     <div class="loader" id="loader">Analyzing...</div>
 

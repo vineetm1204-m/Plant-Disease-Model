@@ -14,7 +14,7 @@ model = load_model("model.h5")
 class_names = ["Healthy", "Diseased"]
 
 def preprocess_image(image):
-    image = image.resize((224, 224))
+    image = image.resize((128, 128)) 
     image = np.array(image) / 255.0
     image = np.expand_dims(image, axis=0)
     return image
@@ -34,14 +34,21 @@ def predict():
 
     prediction = model.predict(processed)
 
-    pred_index = np.argmax(prediction)
-    result = class_names[pred_index]
-    confidence = float(np.max(prediction)) * 100
+# Binary classification
+    pred = 1 - float(prediction[0][0])
+
+    if pred > 0.5:
+        result = "Diseased ❌"
+        confidence = pred * 100
+    else:
+        result = "Healthy ✅"
+        confidence = (1 - pred) * 100
 
     return jsonify({
         "result": result,
-        "confidence": confidence
+        "confidence": float(confidence)   # extra safety
     })
 
 if __name__ == '__main__':
     app.run(debug=True)
+
