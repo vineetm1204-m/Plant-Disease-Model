@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Leaf Health Scanner</title>
+
+<link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#000000">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: #f5f5f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    width: 320px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+video {
+    width: 100%;
+    border-radius: 12px;
+}
+
+button {
+    margin-top: 15px;
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: black;
+    color: white;
+    cursor: pointer;
+}
+
+.result {
+    margin-top: 15px;
+    font-weight: 500;
+}
+
+.loader {
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>🌱 Leaf Health Scanner</h1>
+
+    <video id="video" autoplay playsinline></video>
+
+    <button onclick="capture()">Scan Leaf</button>
+
+    <div class="loader" id="loader">Analyzing...</div>
+
+    <div class="result" id="result"></div>
+    <div id="confidence"></div>
+
+    <canvas id="canvas" style="display:none;"></canvas>
+</div>
+
+<script src="/static/script.js"></script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/static/service-worker.js');
+}
+</script>
+
+</body>
+</html>
