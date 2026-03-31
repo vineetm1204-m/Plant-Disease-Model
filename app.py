@@ -34,7 +34,7 @@ def predict():
 
     prediction = model.predict(processed)
 
-# Binary classification
+    # Binary classification
     pred = 1 - float(prediction[0][0])
 
     if pred > 0.5:
