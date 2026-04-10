@@ -1,11 +1,18 @@
-from flask import Flask, render_template, request, jsonify
+from io import BytesIO
+
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 import numpy as np
 import base64
 from PIL import Image
-from io import BytesIO
+from pydantic import BaseModel
 from tensorflow.keras.models import load_model
 
-app = Flask(__name__, static_folder='static')
+app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 # Load model
 model = load_model("model.h5")
@@ -19,13 +26,18 @@ def preprocess_image(image):
     image = np.expand_dims(image, axis=0)
     return image
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+class PredictionRequest(BaseModel):
+    image: str
 
-@app.route('/predict', methods=['POST'])
-def predict():
-    data = request.json['image']
+
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.post("/predict")
+async def predict(payload: PredictionRequest):
+    data = payload.image
 
     image_data = base64.b64decode(data.split(',')[1])
     image = Image.open(BytesIO(image_data)).convert("RGB")
@@ -44,11 +56,13 @@ def predict():
         result = "Healthy ✅"
         confidence = (1 - pred) * 100
 
-    return jsonify({
+    return JSONResponse({
         "result": result,
         "confidence": float(confidence)   # extra safety
     })
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    import uvicorn
+
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
 

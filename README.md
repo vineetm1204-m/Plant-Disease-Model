@@ -4,7 +4,7 @@
 ### Plant Disease Detection Using Machine Learning
 
 ![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Flask](https://img.shields.io/badge/Flask-2.x-000000?style=for-the-badge&logo=flask&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.x-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![Keras](https://img.shields.io/badge/Keras-TensorFlow-D00000?style=for-the-badge&logo=keras&logoColor=white)
 ![HTML5](https://img.shields.io/badge/Frontend-HTML%2FJS-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![PWA](https://img.shields.io/badge/PWA-Enabled-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)
@@ -38,13 +38,13 @@
 
 Plant diseases cause massive agricultural losses every year, often going undetected until it's too late. The **Leaf Health Scanner** is a deep learning-based **Progressive Web App (PWA)** that detects whether a plant leaf is **healthy or diseased** using live camera input directly from the user's device.
 
-The CNN model is served via a **Flask backend**, and the frontend uses the browser's **MediaDevices API** to capture images, making it feel like a native mobile scanner — installable, offline-capable, and fast.
+The CNN model is served via a **FastAPI backend**, and the frontend uses the browser's **MediaDevices API** to capture images, making it feel like a native mobile scanner — installable, offline-capable, and fast.
 
 **Key Highlights:**
 - 📷 Real-time leaf scanning via **device camera** (MediaDevices API)
 - 🧠 CNN model classifies leaves as **Healthy** or **Diseased** with a confidence score
 - 🔄 Full preprocessing pipeline on the server (decode → RGB → resize → normalize → reshape)
-- 📡 JSON response from Flask backend to dynamic frontend UI
+- 📡 JSON response from FastAPI backend to dynamic frontend UI
 - 📱 **PWA** — installable on mobile, fullscreen app-like experience, offline support via service worker
 - ☁️ Heroku-ready with `Procfile` configuration
 - 📓 Complete training pipeline in Jupyter Notebook
@@ -78,7 +78,7 @@ dataset/
 | Layer | Technology |
 |---|---|
 | **Model Training** | Python, TensorFlow, Keras, NumPy |
-| **Backend** | Flask (Python) |
+| **Backend** | FastAPI (Python) |
 | **Image Processing** | Pillow / OpenCV, base64 |
 | **Frontend** | HTML5, CSS3, JavaScript (MediaDevices API) |
 | **PWA** | Service Worker, Web App Manifest |
@@ -97,7 +97,7 @@ Plant-Disease-Model/
 ├── templates/                # Jinja2 HTML templates
 │   └── index.html            # Main camera UI
 │
-├── app.py                    # Flask app — routes & prediction logic
+├── app.py                    # FastAPI app — routes & prediction logic
 ├── model.h5                  # Trained Keras CNN model
 ├── requirements.txt          # Python dependencies
 ├── Procfile                  # Heroku deployment config
@@ -120,7 +120,7 @@ The app accesses the device camera via the browser's **MediaDevices API**. The u
 ---
 
 ### 2. 🔄 Image Preprocessing
-The captured image is encoded as **base64** and sent to the Flask backend. The server then:
+The captured image is encoded as **base64** and sent to the FastAPI backend. The server then:
 - Decodes the base64 string and converts it to **RGB format**
 - **Resizes** the image to the model's required input dimensions
 - **Normalizes** pixel values to the range `[0, 1]`
@@ -145,7 +145,7 @@ A **confidence score** is derived from the prediction probability and included i
 ---
 
 ### 5. 📡 Response to Frontend
-The Flask backend returns a **JSON response**:
+The FastAPI backend returns a **JSON response**:
 ```json
 {
   "prediction": "Diseased",
@@ -179,7 +179,7 @@ The application is built as a **PWA**, enabling users to:
 🖼️  Image Captured (MediaDevices API)
        │
        ▼
-📦 Encoded as Base64 → Sent to Flask Backend
+📦 Encoded as Base64 → Sent to FastAPI Backend
        │
        ▼
 🔄 Preprocessing
@@ -222,11 +222,11 @@ source venv/bin/activate        # On Windows: venv\Scripts\activate
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Run the Flask app
-python app.py
+# 4. Run the FastAPI app
+uvicorn app:app --reload
 ```
 
-Open your browser and visit: **`http://localhost:5000`**
+Open your browser and visit: **`http://localhost:8000`**
 
 > **Note:** Camera access requires HTTPS in production. Use a tool like `ngrok` for local HTTPS tunneling if testing on mobile.
 
